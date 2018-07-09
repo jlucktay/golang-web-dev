@@ -11,6 +11,13 @@ func main() {
 	eight()
 	nine()
 	ten()
+	eleven()
+	twelve()
+	// thirteen()
+	fourteen()
+	fifteen()
+	sixteen()
+	seventeen()
 }
 
 func one() {
@@ -151,4 +158,103 @@ func ten() {
 
 	report(t)
 	report(s)
+}
+
+type gator int
+
+func eleven() {
+	var g1 gator
+
+	g1 = 42
+
+	fmt.Println(g1)
+	fmt.Printf("%T\n", g1)
+}
+
+func twelve() {
+	var g1 gator
+	var x int
+
+	g1 = 42
+	x = 27
+
+	fmt.Println(g1)
+	fmt.Printf("%T\n", g1)
+	fmt.Println(x)
+	fmt.Printf("%T\n", x)
+}
+
+func thirteen() {
+	// var g1 gator
+	// var x int
+
+	// g1 = 42
+
+	// x = g1
+}
+
+func fourteen() {
+	var g1 gator
+	var x int
+
+	g1 = 42
+	x = 27
+
+	fmt.Println(g1)
+	fmt.Printf("%T\n", g1)
+	fmt.Println(x)
+	fmt.Printf("%T\n", x)
+
+	x = int(g1)
+
+	fmt.Println(x)
+	fmt.Printf("%T\n", x)
+}
+
+func (g gator) greeting() {
+	fmt.Println("Hello, I am a gator")
+}
+
+func fifteen() {
+	var g1 gator = 99
+
+	g1.greeting()
+}
+
+type flamingo bool
+
+func (f flamingo) greeting() {
+	fmt.Println("Hello, I am pink and beautiful and wonderful")
+}
+
+type swampCreature interface {
+	greeting()
+}
+
+func bayou(sc swampCreature) {
+	sc.greeting()
+}
+
+func sixteen() {
+	var g1 gator = 99
+	var f1 flamingo = true
+
+	bayou(g1)
+	bayou(f1)
+}
+
+func seventeen() {
+	s := "i'm sorry dave i can't do that"
+
+	fmt.Println(s)
+	fmt.Println([]byte(s))
+	fmt.Println(string([]byte(s)))
+
+	fmt.Println(s[:14])
+	fmt.Printf("'%s'\n", s[10:22])
+	fmt.Println(s[17:])
+
+	for _, x := range s {
+		fmt.Println(string(x), x)
+	}
 }
