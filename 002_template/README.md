@@ -14,18 +14,18 @@ A company creates a piece of mail to send to everyone, and then they merge data 
 
 ## Template Example - Merged With Data
 
-*** 
+***
 
 Dear Mr. Jones,
- 
+
 Are you tired of high electric bills?
 
 We have noticed that your house at .....
 
-*** 
+***
 
 Dear Mr. Smith,
- 
+
 Are you tired of high electric bills?
 
 We have noticed that your house at .....
