@@ -1,73 +1,87 @@
-# Type Template
+# 004
 
-## [template.Template](https://godoc.org/text/template#Template)
+## Type Template
+
+### [template.Template](https://godoc.org/text/template#Template)
+
 ``` Go
 template.Template
 ```
 
 ***
 
-# Parsing templates
+## Parsing templates
 
-## [template.ParseFiles](https://godoc.org/text/template#ParseFiles)
+### [template.ParseFiles](https://godoc.org/text/template#ParseFiles)
+
 ``` Go
 func ParseFiles(filenames ...string) (*Template, error)
 ```
 
-## [template.ParseGlob](https://godoc.org/text/template#ParseGlob)
+### [template.ParseGlob](https://godoc.org/text/template#ParseGlob)
+
 ``` Go
 func ParseGlob(pattern string) (*Template, error)
 ```
+
 ***
 
-## [template.Parse](https://godoc.org/text/template#Template.Parse)
+### [template.Parse](https://godoc.org/text/template#Template.Parse)
+
 ``` Go
 func (t *Template) Parse(text string) (*Template, error)
 ```
 
-## [template.ParseFiles](https://godoc.org/text/template#Template.ParseFiles)
+### [template.ParseFiles](https://godoc.org/text/template#Template.ParseFiles)
+
 ``` Go
 func (t *Template) ParseFiles(filenames ...string) (*Template, error)
 ```
 
-## [template.ParseGlob](https://godoc.org/text/template#Template.ParseGlob)
+### [template.ParseGlob](https://godoc.org/text/template#Template.ParseGlob)
+
 ``` Go
 func (t *Template) ParseGlob(pattern string) (*Template, error)
 ```
 
 ***
 
-# Executing templates
+## Executing templates
 
-## [template.Execute](https://godoc.org/text/template#Template.Execute)
+### [template.Execute](https://godoc.org/text/template#Template.Execute)
+
 ``` Go
 func (t *Template) Execute(wr io.Writer, data interface{}) error
 ```
 
-## [template.ExecuteTemplate](https://godoc.org/text/template#Template.ExecuteTemplate)
+### [template.ExecuteTemplate](https://godoc.org/text/template#Template.ExecuteTemplate)
+
 ``` Go
 func (t *Template) ExecuteTemplate(wr io.Writer, name string, data interface{}) error
 ```
 
 ***
 
-# Helpful template functions
+## Helpful template functions
 
-## [template.Must](https://godoc.org/text/template#Must)
+### [template.Must](https://godoc.org/text/template#Must)
+
 ``` Go
 func Must(t *Template, err error) *Template
 ```
 
-## [template.New](https://godoc.org/text/template#New)
+### [template.New](https://godoc.org/text/template#New)
+
 ``` Go
 func New(name string) *Template
 ```
 
 ***
 
-# The init function
+## The init function
 
-## [The init function](https://golang.org/doc/effective_go.html#init)
+### [The init function](https://golang.org/doc/effective_go.html#init)
+
 ``` Go
 func init()
 ```

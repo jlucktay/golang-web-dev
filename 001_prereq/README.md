@@ -8,7 +8,7 @@
 - [multi-variable short declaration](https://play.golang.org/p/UnOcuIpJpn)
 - [var initializes to zero value](https://play.golang.org/p/Ewm2bVrNyr)
 
-  ***
+***
 
 ## DATA STRUCTURES
 
@@ -33,7 +33,7 @@
   - [methods](https://play.golang.org/p/kLz9RN_K8u)
   - [interface](https://play.golang.org/p/4z_wL36wxe)
 
-    ***
+***
 
 ## HANDS-ON
 
