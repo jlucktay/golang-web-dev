@@ -5,10 +5,16 @@
     <title>Document</title>
 </head>
 <body>
-{{range .}}Academic year: {{.AcaYear}}<br />
-Fall term: {{.Fall.Term}}<br />
-{{range .Fall.Courses}}{{.Number}} - {{.Name}} - {{.Units}}<br />
-{{end}}Spring term: {{.Spring.Term}}<br />
-{{range .Spring.Courses}}{{.Number}} - {{.Name}} - {{.Units}}<br />
-{{end}}{{end}}</body>
+{{range .}}
+    Academic year: {{.AcaYear}}<br />
+    Fall term: {{.Fall.Term}}<br />
+    {{range .Fall.Courses}}
+        {{.Number}} - {{.Name}} - {{.Units}}<br />
+    {{end}}
+    Spring term: {{.Spring.Term}}<br />
+    {{range .Spring.Courses}}
+        {{.Number}} - {{.Name}} - {{.Units}}<br />
+    {{end}}
+{{end}}
+</body>
 </html>
