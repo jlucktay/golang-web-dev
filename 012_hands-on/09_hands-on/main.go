@@ -2,8 +2,9 @@ package main
 
 import (
 	"encoding/csv"
-	"fmt"
+	"html/template"
 	"log"
+	"net/http"
 	"os"
 	"strconv"
 	"time"
@@ -17,10 +18,17 @@ type tableRecord struct {
 }
 
 func main() {
-	r := parseRecords("table.csv")
+	http.HandleFunc("/", helloHandler)
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}
 
-	for _, x := range r {
-		fmt.Printf("%s, %#v\n", x.Date, x.Volume)
+func helloHandler(w http.ResponseWriter, req *http.Request) {
+	r := parseRecords("table.csv")
+	tpl := template.Must(template.ParseFiles("09.gohtml"))
+
+	err := tpl.Execute(w, r)
+	if err != nil {
+		log.Fatal(err)
 	}
 }
 
