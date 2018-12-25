@@ -54,12 +54,7 @@ func parseRecords(filename string) []tableRecord {
 			log.Fatal(errVolumeParse)
 		}
 
-		newRecord := tableRecord{
-			Date:   newDate,
-			Volume: newVolume,
-		}
-
-		records = append(records, newRecord)
+		records = append(records, tableRecord{newDate, newVolume})
 	}
 
 	return records
