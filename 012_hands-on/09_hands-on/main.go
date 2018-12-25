@@ -1,11 +1,10 @@
 package main
 
 import (
-	"bytes"
 	"encoding/csv"
 	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
 	"strconv"
 	"time"
 )
@@ -18,13 +17,21 @@ type tableRecord struct {
 }
 
 func main() {
-	tableContent, tableErr := ioutil.ReadFile("table.csv")
-	if tableErr != nil {
-		log.Fatal(tableErr)
+	r := parseRecords("table.csv")
+
+	for _, x := range r {
+		fmt.Printf("%s, %#v\n", x.Date, x.Volume)
 	}
+}
 
-	tableReader := csv.NewReader(bytes.NewReader(tableContent))
+func parseRecords(filename string) []tableRecord {
+	source, errOpen := os.Open(filename)
+	if errOpen != nil {
+		log.Fatal(errOpen)
+	}
+	defer source.Close()
 
+	tableReader := csv.NewReader(source)
 	tableRecords, tableReadErr := tableReader.ReadAll()
 	if tableReadErr != nil {
 		log.Fatal(tableReadErr)
@@ -55,7 +62,5 @@ func main() {
 		records = append(records, newRecord)
 	}
 
-	for _, x := range records {
-		fmt.Printf("%s, %#v\n", x.Date, x.Volume)
-	}
+	return records
 }
