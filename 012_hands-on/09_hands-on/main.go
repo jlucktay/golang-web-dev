@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/csv"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -19,6 +20,8 @@ type tableRecord struct {
 
 func main() {
 	http.HandleFunc("/", helloHandler)
+
+	fmt.Println("Serving on port 8080...")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
@@ -30,6 +33,8 @@ func helloHandler(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	fmt.Printf("Served! (%s)\n", time.Now())
 }
 
 func parseRecords(filename string) []tableRecord {
