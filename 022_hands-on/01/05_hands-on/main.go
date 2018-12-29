@@ -9,9 +9,9 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/", index)
-	http.HandleFunc("/dog/", dog)
-	http.HandleFunc("/me", me)
+	http.Handle("/", http.HandlerFunc(index))
+	http.Handle("/dog/", http.HandlerFunc(dog))
+	http.Handle("/me", http.HandlerFunc(me))
 
 	http.ListenAndServe(":8080", nil)
 }
