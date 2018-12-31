@@ -23,46 +23,49 @@ func main() {
 			log.Fatal(errC)
 			continue
 		}
-
 		go serve(c)
 	}
 }
 
 func serve(c net.Conn) {
 	defer c.Close()
-
-	i := 0
+	firstLine := true
+	var rMethod, rTarget string
 	s := bufio.NewScanner(c)
-	var rMethod, rTarget, rVersion string
 	for s.Scan() {
 		ln := s.Text()
-
-		if i == 0 {
-			i++
-			rLine := strings.Fields(ln)
-			rMethod, rTarget, rVersion = rLine[0], rLine[1], rLine[2]
+		fmt.Println(ln)
+		if firstLine {
+			xs := strings.Fields(ln)
+			rMethod, rTarget = xs[0], xs[1]
 			fmt.Println("Method:", rMethod)
 			fmt.Println("Request target:", rTarget)
-			fmt.Println("HTTP version:", rVersion)
 		}
-
 		if ln == "" {
 			fmt.Println("End of HTTP headers")
 			break
 		}
-
-		fmt.Println(ln)
+		firstLine = false
 	}
 
-	body := fmt.Sprintf("I see you connected from address '%v' at timestamp '%v'.\r\n",
+	body := `<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+`
+	body += "<h1>HOLY COW THIS IS LOW LEVEL</h1>\n"
+	body += fmt.Sprintf("I see you connected from address <strong>'%v'</strong> at timestamp <strong>'%v'</strong>.<br />\n",
 		c.RemoteAddr(), time.Now())
-	body += fmt.Sprintf("Method: %v\r\n", rMethod)
-	body += fmt.Sprintf("Request target: %v\r\n", rTarget)
-	body += fmt.Sprintf("HTTP version: %v\r\n", rVersion)
+	body += fmt.Sprintf("Method: %v<br />\n", rMethod)
+	body += fmt.Sprintf("Request target: %v<br />\n", rTarget)
+	body += "</body>\n</html>"
 
 	io.WriteString(c, "HTTP/1.1 200 OK\r\n")
 	fmt.Fprintf(c, "Content-Length: %d\r\n", len(body))
-	fmt.Fprint(c, "Content-Type: text/plain\r\n")
+	fmt.Fprint(c, "Content-Type: text/html\r\n")
 	io.WriteString(c, "\r\n")
 	io.WriteString(c, body)
 }
