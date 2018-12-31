@@ -3,8 +3,10 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"log"
 	"net"
+	"time"
 )
 
 func main() {
@@ -39,6 +41,5 @@ func serve(c net.Conn) {
 		}
 	}
 
-	// fmt.Println("Code got here.")
-	// io.WriteString(c, fmt.Sprintf("I see you connected from '%v' at '%v'.\r\n", c.RemoteAddr(), time.Now()))
+	io.WriteString(c, fmt.Sprintf("I see you connected from '%v' at '%v'.\r\n", c.RemoteAddr(), time.Now()))
 }
