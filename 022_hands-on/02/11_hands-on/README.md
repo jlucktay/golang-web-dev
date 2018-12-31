@@ -1,4 +1,4 @@
-# Building upon the code from the previous problem:
+# Building upon the code from the previous problem
 
 Before we WRITE our RESPONSE , let's WRITE to our RESPONSE the STATUS LINE and some REPONSE HEADERS. Remember the request line and status line:
 
