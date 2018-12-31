@@ -1,4 +1,4 @@
-# Building upon the code from the previous problem:
+# Building upon the code from the previous problem
 
 Print to standard out (the terminal) the REQUEST method and the REQUEST URI from the REQUEST LINE.
 
