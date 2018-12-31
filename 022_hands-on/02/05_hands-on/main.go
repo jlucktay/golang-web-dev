@@ -25,11 +25,17 @@ func main() {
 
 		s := bufio.NewScanner(c)
 		for s.Scan() {
-			fmt.Println(s.Text())
+			ln := s.Text()
+			fmt.Println(ln)
+
+			if ln == "" {
+				break
+			}
 		}
-		defer c.Close()
 
 		fmt.Println("Code got here.")
 		io.WriteString(c, fmt.Sprintf("I see you connected from '%v' at '%v'.\r\n", c.RemoteAddr(), time.Now()))
+
+		c.Close()
 	}
 }
