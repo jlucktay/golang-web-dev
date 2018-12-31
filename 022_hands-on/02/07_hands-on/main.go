@@ -3,10 +3,8 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"io"
 	"log"
 	"net"
-	"time"
 )
 
 func main() {
@@ -23,19 +21,24 @@ func main() {
 			continue
 		}
 
-		s := bufio.NewScanner(c)
-		for s.Scan() {
-			ln := s.Text()
-			fmt.Println(ln)
-
-			if ln == "" {
-				break
-			}
-		}
-
-		fmt.Println("Code got here.")
-		io.WriteString(c, fmt.Sprintf("I see you connected from '%v' at '%v'.\r\n", c.RemoteAddr(), time.Now()))
-
-		c.Close()
+		go serve(c)
 	}
+}
+
+func serve(c net.Conn) {
+	defer c.Close()
+
+	s := bufio.NewScanner(c)
+	for s.Scan() {
+		ln := s.Text()
+		fmt.Println(ln)
+
+		if ln == "" {
+			fmt.Println("End of HTTP headers")
+			break
+		}
+	}
+
+	// fmt.Println("Code got here.")
+	// io.WriteString(c, fmt.Sprintf("I see you connected from '%v' at '%v'.\r\n", c.RemoteAddr(), time.Now()))
 }
