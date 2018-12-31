@@ -1,4 +1,4 @@
-# Building upon the code from the previous exercise:
+# Building upon the code from the previous exercise
 
 In that previous exercise, we WROTE to the connection.
 
