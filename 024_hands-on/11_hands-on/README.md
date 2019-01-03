@@ -1,4 +1,4 @@
-# Starting with the code in the "starting-files" folder:
+# Starting with the code in the "starting-files" folder
 
 ## wire this program up so that it works
 
@@ -12,7 +12,7 @@ Inside the func "apply", use this code to create the logic to respond differentl
 
 ``` go
 if req.Method == http.MethodPost {
-    		// code here
-    		return
-    	}
+  // code here
+  return
+}
 ```
