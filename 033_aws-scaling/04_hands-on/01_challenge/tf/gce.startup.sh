@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 IFS=$'\n\t'
-LogFile="/home/jameslucktaylor/gce.startup.log"
+UserHome="/home/jameslucktaylor"
+LogFile="$UserHome/gce.startup.log"
+GoSource="$UserHome/main.go"
+Binary="$UserHome/revolver"
+ServiceFile="/etc/systemd/system/revolver.service"
 
 function log(){
     echo "[$(date '+%Y%m%d.%H%M%S.%N%z')] $1" | sudo -u jameslucktaylor tee --append $LogFile
@@ -35,23 +39,25 @@ apt autoremove --assume-yes
 log "Finished 'apt'."
 
 log "Fetching main.go from GitHub..."
-curl https://raw.githubusercontent.com/jlucktay/golang-web-dev/master/033_aws-scaling/04_hands-on/01_challenge/tf/go/main.go | sudo -u jameslucktaylor tee /home/jameslucktaylor/main.go
+curl https://raw.githubusercontent.com/jlucktay/golang-web-dev/master/033_aws-scaling/04_hands-on/01_challenge/tf/go/main.go | sudo -u jameslucktaylor tee $GoSource
 log "Fetched main.go from GitHub."
 
 log "Building 'revolver' binary..."
-go build -o /home/jameslucktaylor/revolver -a -ldflags '-extldflags "-static"' -v -work /home/jameslucktaylor/main.go >> $LogFile 2>&1
+go build -o $Binary -a -ldflags '-extldflags "-static"' -v -work $GoSource >> $LogFile 2>&1
 log "Built 'revolver' binary."
 
-ServiceFile="/etc/systemd/system/revolver.service"
-
 log "Catting '$ServiceFile'..."
-cat $ServiceFile <<'EOF'
+tee $ServiceFile <<'EOF'
 [Unit]
 Description=Revolver - Go Server
 
 [Service]
-ExecStart=/home/jameslucktaylor/revolver
-WorkingDirectory=/home/jameslucktaylor
+EOF
+
+echo "ExecStart=$Binary" >> $ServiceFile
+echo "WorkingDirectory=$UserHome" >> $ServiceFile
+
+tee --append $ServiceFile <<'EOF'
 User=root
 Group=root
 Restart=always
@@ -62,13 +68,10 @@ EOF
 log "Catted '$ServiceFile'."
 
 log "Add the service to systemd..."
-systemctl enable $ServiceFile
+systemctl enable $ServiceFile >> $LogFile
 
 log "Activate the service..."
-systemctl start $ServiceFile
+systemctl start $ServiceFile >> $LogFile
 
 log "Check if systemd started it..."
-systemctl status $ServiceFile
-
-log "Stop systemd if so desired..."
-systemctl stop $ServiceFile
+systemctl status $ServiceFile >> $LogFile
