@@ -3,7 +3,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 function log(){
-    echo "[$(date '+%Y%m%d.%H%M%S.%N%z')] $1" | sudo -u jameslucktaylor tee --append /home/jameslucktaylor/gce.startup.log
+    echo "[$(date '+%Y%m%d.%H%M%S.%N%z')] $1" >> /home/jameslucktaylor/gce.startup.log
 }
 
 # Timestamp start
