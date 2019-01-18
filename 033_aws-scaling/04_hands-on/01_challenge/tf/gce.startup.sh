@@ -13,7 +13,7 @@ log "cloud-init: start"
 trap "log 'cloud-init: finish'" INT TERM EXIT
 
 log "Catting '.toprc'..."
-sudo -u jameslucktay tee /home/jameslucktaylor/.toprc <<'EOF'
+sudo -u jameslucktaylor tee /home/jameslucktaylor/.toprc <<'EOF'
 ${toprc}
 EOF
 log "Catted '.toprc'."
