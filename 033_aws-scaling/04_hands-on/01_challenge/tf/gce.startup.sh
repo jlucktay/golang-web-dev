@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 IFS=$'\n\t'
+LogFile="/home/jameslucktaylor/gce.startup.log"
 
 function log(){
-    echo "[$(date '+%Y%m%d.%H%M%S.%N%z')] $1" >> /home/jameslucktaylor/gce.startup.log
+    echo "[$(date '+%Y%m%d.%H%M%S.%N%z')] $1" | sudo -u jameslucktaylor tee --append $LogFile
 }
 
 # Timestamp start
@@ -21,8 +22,8 @@ trap "log 'cloud-init: finish'" INT TERM EXIT
 # EOF
 # log "Catted '.toprc'."
 
+# Run patches and install Go, GCC, etc
 log "Running 'apt'..."
-# Run patches and install golang
 log "'apt update'..."
 apt update
 log "'apt upgrade'..."
@@ -38,8 +39,7 @@ curl https://raw.githubusercontent.com/jlucktay/golang-web-dev/master/033_aws-sc
 log "Fetched main.go from GitHub."
 
 log "Building 'revolver' binary..."
-go build -o revolver -a -ldflags '-extldflags "-static"' main.go
-# go build -o revolver -a -installsuffix cgo -ldflags '-extldflags "-static"' main.go
+go build -o revolver -a -ldflags '-extldflags "-static"' -v -work main.go >> $LogFile 2>&1
 log "Built 'revolver' binary."
 
 # # echo "Hello, World" > index.html
