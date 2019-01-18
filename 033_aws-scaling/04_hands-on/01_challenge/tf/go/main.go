@@ -15,18 +15,23 @@ var err error
 var instanceID string
 
 func init() {
-	/*
-		resp, err := http.Get("http://169.254.169.254/latest/meta-data/instance-id")
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
+	req, errReq := http.NewRequest("GET", "http://metadata.google.internal/computeMetadata/v1/instance/id", nil)
+	if errReq != nil {
+		log.Fatal(errReq)
+	}
 
-		bs := make([]byte, resp.ContentLength)
-		resp.Body.Read(bs)
-		resp.Body.Close()
-	*/
-	instanceID = "string(bs)"
+	req.Header.Add("Metadata-Flavor", "Google")
+
+	resp, errResp := http.DefaultClient.Do(req)
+	if errResp != nil {
+		log.Fatal(errResp)
+	}
+
+	bs := make([]byte, resp.ContentLength)
+	resp.Body.Read(bs)
+	resp.Body.Close()
+
+	instanceID = string(bs)
 }
 
 func main() {
