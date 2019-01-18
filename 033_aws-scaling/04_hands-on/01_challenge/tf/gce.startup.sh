@@ -4,8 +4,9 @@ IFS=$'\n\t'
 UserHome="/home/jameslucktaylor"
 LogFile="$UserHome/gce.startup.log"
 GoSource="$UserHome/main.go"
-Binary="$UserHome/revolver"
-ServiceFile="/etc/systemd/system/revolver.service"
+ServiceName="revolver"
+Binary="$UserHome/$ServiceName"
+ServiceFile="/etc/systemd/system/$ServiceName.service"
 
 function log(){
     echo "[$(date '+%Y%m%d.%H%M%S.%N%z')] $1" | sudo -u jameslucktaylor tee --append $LogFile
@@ -42,14 +43,14 @@ log "Fetching main.go from GitHub..."
 curl https://raw.githubusercontent.com/jlucktay/golang-web-dev/master/033_aws-scaling/04_hands-on/01_challenge/tf/go/main.go | sudo -u jameslucktaylor tee $GoSource
 log "Fetched main.go from GitHub."
 
-log "Building 'revolver' binary..."
+log "Building '$ServiceName' binary..."
 go build -o $Binary -a -ldflags '-extldflags "-static"' -v -work $GoSource >> $LogFile 2>&1
-log "Built 'revolver' binary."
+log "Built '$ServiceName' binary."
 
 log "Catting '$ServiceFile'..."
 tee $ServiceFile <<'EOF'
 [Unit]
-Description=Revolver - Go Server
+Description=Go Server
 
 [Service]
 EOF
@@ -68,10 +69,10 @@ EOF
 log "Catted '$ServiceFile'."
 
 log "Add the service to systemd..."
-systemctl enable $ServiceFile >> $LogFile
+systemctl enable $ServiceName >> $LogFile 2>&1
 
 log "Activate the service..."
-systemctl start $ServiceFile >> $LogFile
+systemctl start $ServiceName >> $LogFile 2>&1
 
 log "Check if systemd started it..."
-systemctl status $ServiceFile >> $LogFile
+systemctl status $ServiceName >> $LogFile 2>&1
