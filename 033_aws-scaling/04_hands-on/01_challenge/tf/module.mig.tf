@@ -1,3 +1,6 @@
+# TODO: look into switching over to this:
+# https://cloud.google.com/compute/docs/instances/managing-instance-access
+
 module "mig" {
   source  = "GoogleCloudPlatform/managed-instance-group/google"
   version = "1.1.15"
