@@ -42,5 +42,33 @@ log "Building 'revolver' binary..."
 go build -o /home/jameslucktaylor/revolver -a -ldflags '-extldflags "-static"' -v -work /home/jameslucktaylor/main.go >> $LogFile 2>&1
 log "Built 'revolver' binary."
 
-# # echo "Hello, World" > index.html
-# # nohup busybox httpd -f -p 8080 &
+ServiceFile="/etc/systemd/system/revolver.service"
+
+log "Catting '$ServiceFile'..."
+cat $ServiceFile <<'EOF'
+[Unit]
+Description=Revolver - Go Server
+
+[Service]
+ExecStart=/home/jameslucktaylor/revolver
+WorkingDirectory=/home/jameslucktaylor
+User=root
+Group=root
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+log "Catted '$ServiceFile'."
+
+log "Add the service to systemd..."
+systemctl enable $ServiceFile
+
+log "Activate the service..."
+systemctl start $ServiceFile
+
+log "Check if systemd started it..."
+systemctl status $ServiceFile
+
+log "Stop systemd if so desired..."
+systemctl stop $ServiceFile
