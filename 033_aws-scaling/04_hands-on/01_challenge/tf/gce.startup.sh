@@ -27,7 +27,7 @@ apt upgrade --assume-yes --no-install-recommends
 log "'apt install golang-go'..."
 apt install golang-go --assume-yes --no-install-recommends
 log "'apt install gcc'..."
-apt install gcc --assume-yes --no-install-recommends
+apt install gcc --assume-yes
 log "'apt autoremove'..."
 apt autoremove --assume-yes
 log "Finished 'apt'."
@@ -38,6 +38,7 @@ log "Fetched main.go from GitHub."
 
 log "Building 'revolver' binary..."
 go build -o revolver -a -ldflags '-extldflags "-static"' main.go
+# go build -o revolver -a -installsuffix cgo -ldflags '-extldflags "-static"' main.go
 log "Built 'revolver' binary."
 
 # # echo "Hello, World" > index.html
