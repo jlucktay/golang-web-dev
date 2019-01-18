@@ -39,7 +39,7 @@ curl https://raw.githubusercontent.com/jlucktay/golang-web-dev/master/033_aws-sc
 log "Fetched main.go from GitHub."
 
 log "Building 'revolver' binary..."
-go build -o revolver -a -ldflags '-extldflags "-static"' -v -work main.go >> $LogFile 2>&1
+go build -o /home/jameslucktaylor/revolver -a -ldflags '-extldflags "-static"' -v -work /home/jameslucktaylor/main.go >> $LogFile 2>&1
 log "Built 'revolver' binary."
 
 # # echo "Hello, World" > index.html
