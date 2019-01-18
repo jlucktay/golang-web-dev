@@ -12,22 +12,15 @@ function log(){
     echo "[$(date '+%Y%m%d.%H%M%S.%N%z')] $1" | sudo -u jameslucktaylor tee --append $LogFile
 }
 
-# Timestamp start
 log "cloud-init: start"
-
-# Drop a note when this script is done (note: 'done' might include exiting prematurely due to an error!)
 trap "log 'cloud-init: finish'" INT TERM EXIT
 
 # log "Catting '.toprc'..."
 # sudo -u jameslucktaylor tee /home/jameslucktaylor/.toprc <<'EOF'
-# $
-# {
-# toprc
-# }
+# ${toprc}
 # EOF
 # log "Catted '.toprc'."
 
-# Run patches and install Go, GCC, etc
 log "Running 'apt'..."
 log "'apt update'..."
 apt update
