@@ -32,6 +32,10 @@ log "'apt autoremove'..."
 apt autoremove --assume-yes
 log "Finished 'apt'."
 
+log "Getting mysql dependency..."
+go get -d -u -v github.com/go-sql-driver/mysql | sudo -u jameslucktaylor tee --append $LogFile
+log "Got mysql dependency."
+
 log "Fetching main.go from GitHub..."
 curl https://raw.githubusercontent.com/jlucktay/golang-web-dev/master/033_aws-scaling/04_hands-on/01_challenge/tf/go/main.go | sudo -u jameslucktaylor tee $GoSource
 log "Fetched main.go from GitHub."
