@@ -12,6 +12,12 @@ log "cloud-init: start"
 # Drop a note when this script is done (note: 'done' might include exiting prematurely due to an error!)
 trap "log 'cloud-init: finish'" INT TERM EXIT
 
+log "Catting '.toprc'..."
+sudo -u jameslucktay tee /home/jameslucktaylor/.toprc <<'EOF'
+${toprc}
+EOF
+log "Catted '.toprc'."
+
 log "Running 'apt'..."
 # Run patches and install golang
 log "'apt update'..."
@@ -23,12 +29,6 @@ apt install golang-go --assume-yes --no-install-recommends
 log "'apt autoremove'..."
 apt autoremove --assume-yes
 log "Finished 'apt'."
-
-log "Catting '.toprc'..."
-sudo -u jameslucktay tee /home/jameslucktaylor/.toprc <<'EOF'
-${toprc}
-EOF
-log "Catted '.toprc'."
 
 log "Fetching main.go from GitHub..."
 curl https://raw.githubusercontent.com/jlucktay/golang-web-dev/master/033_aws-scaling/04_hands-on/01_challenge/tf/go/main.go | sudo -u jameslucktaylor tee /home/jameslucktaylor/main.go
