@@ -15,9 +15,8 @@ module "mig" {
   zone              = "${local.zone}"
 
   rolling_update_policy = [{
-    max_unavailable_percent = 100
-    minimal_action          = "REPLACE"
-    type                    = "PROACTIVE"
+    minimal_action = "REPLACE"
+    type           = "PROACTIVE"
   }]
 
   ssh_source_ranges = [
