@@ -1,63 +1,68 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
-
-	_ "github.com/go-sql-driver/mysql"
+	// _ "github.com/go-sql-driver/mysql"
 )
 
+/*
 var db *sql.DB
 var err error
+*/
 var instanceID string
 
 func init() {
-	resp, err := http.Get("http://169.254.169.254/latest/meta-data/instance-id")
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
+	/*
+		resp, err := http.Get("http://169.254.169.254/latest/meta-data/instance-id")
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
 
-	bs := make([]byte, resp.ContentLength)
-	resp.Body.Read(bs)
-	resp.Body.Close()
-	instanceID = string(bs)
+		bs := make([]byte, resp.ContentLength)
+		resp.Body.Read(bs)
+		resp.Body.Close()
+	*/
+	instanceID = "string(bs)"
 }
 
 func main() {
-	db, err = sql.Open("mysql", "awsuser:mypassword@tcp(mydbinstance.cakwl95bxza0.us-west-1.rds.amazonaws.com:3306)/test02?charset=utf8")
-	check(err)
-	defer db.Close()
+	/*
+		db, err = sql.Open("mysql", "awsuser:mypassword@tcp(mydbinstance.cakwl95bxza0.us-west-1.rds.amazonaws.com:3306)/test02?charset=utf8")
+		check(err)
+		defer db.Close()
 
-	err = db.Ping()
-	check(err)
-
+		err = db.Ping()
+		check(err)
+	*/
+	// barebones server to start with
 	http.HandleFunc("/", index)
-	http.HandleFunc("/amigos", amigos)
-	http.HandleFunc("/create", create)
-	http.HandleFunc("/insert", insert)
-	http.HandleFunc("/read", read)
-	http.HandleFunc("/update", update)
-	http.HandleFunc("/delete", del)
-	http.HandleFunc("/drop", drop)
 	http.Handle("/favicon.ico", http.NotFoundHandler())
-
 	http.HandleFunc("/ping", ping)
-
+	/*
+		http.HandleFunc("/amigos", amigos)
+		http.HandleFunc("/create", create)
+		http.HandleFunc("/insert", insert)
+		http.HandleFunc("/read", read)
+		http.HandleFunc("/update", update)
+		http.HandleFunc("/delete", del)
+		http.HandleFunc("/drop", drop)
+	*/
 	log.Fatal(http.ListenAndServe(":80", nil))
 }
 
 func index(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprintf(w, "Hello from AWS. (%s)", instanceID)
+	fmt.Fprintf(w, "Hello from GCP. (%s)", instanceID)
 }
 
 func ping(w http.ResponseWriter, req *http.Request) {
 	io.WriteString(w, "OK")
 }
 
+/*
 func amigos(w http.ResponseWriter, req *http.Request) {
 	rows, err := db.Query(`SELECT aName FROM amigos;`)
 	check(err)
@@ -162,3 +167,4 @@ func check(err error) {
 		fmt.Println(err)
 	}
 }
+*/
