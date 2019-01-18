@@ -27,8 +27,3 @@ module "mig" {
     "${module.lb.target_pool}",
   ]
 }
-
-# startup_script
-## get the go server running on the instance
-### build it locally
-### copy the binary
