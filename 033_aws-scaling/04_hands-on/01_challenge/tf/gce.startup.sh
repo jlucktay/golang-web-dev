@@ -24,10 +24,8 @@ log "'apt update'..."
 apt update
 log "'apt upgrade'..."
 apt upgrade --assume-yes --no-install-recommends
-log "'apt install golang-go'..."
-apt install golang-go --assume-yes --no-install-recommends
-log "'apt install gcc'..."
-apt install gcc --assume-yes
+log "'apt install'..."
+apt install gcc build-essential golang-go --assume-yes --no-install-recommends
 log "'apt autoremove'..."
 apt autoremove --assume-yes
 log "Finished 'apt'."
