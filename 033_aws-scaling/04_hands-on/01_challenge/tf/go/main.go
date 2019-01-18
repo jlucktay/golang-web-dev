@@ -42,19 +42,19 @@ func main() {
 	err = db.Ping()
 	check(err)
 
-	// barebones server to start with
 	http.HandleFunc("/", index)
 	http.Handle("/favicon.ico", http.NotFoundHandler())
 	http.HandleFunc("/ping", ping)
-	/*
-		http.HandleFunc("/amigos", amigos)
-		http.HandleFunc("/create", create)
-		http.HandleFunc("/insert", insert)
-		http.HandleFunc("/read", read)
-		http.HandleFunc("/update", update)
-		http.HandleFunc("/delete", del)
-		http.HandleFunc("/drop", drop)
-	*/
+
+	// http.HandleFunc("/amigos", amigos)
+
+	http.HandleFunc("/create", create)
+	http.HandleFunc("/insert", insert)
+	http.HandleFunc("/read", read)
+	http.HandleFunc("/update", update)
+	http.HandleFunc("/delete", del)
+	http.HandleFunc("/drop", drop)
+
 	log.Fatal(http.ListenAndServe(":80", nil))
 }
 
@@ -84,6 +84,7 @@ func amigos(w http.ResponseWriter, req *http.Request) {
 	}
 	fmt.Fprintln(w, s)
 }
+*/
 
 func create(w http.ResponseWriter, req *http.Request) {
 	stmt, err := db.Prepare(`CREATE TABLE customer (name VARCHAR(20));`)
@@ -96,7 +97,7 @@ func create(w http.ResponseWriter, req *http.Request) {
 	n, err := r.RowsAffected()
 	check(err)
 
-	fmt.Fprintln(w, "CREATED TABLE customer", n)
+	fmt.Fprintf(w, "CREATED TABLE customer with %v rows (%s)", n, instanceID)
 }
 
 func insert(w http.ResponseWriter, req *http.Request) {
@@ -110,7 +111,7 @@ func insert(w http.ResponseWriter, req *http.Request) {
 	n, err := r.RowsAffected()
 	check(err)
 
-	fmt.Fprintln(w, "INSERTED RECORD", n)
+	fmt.Fprintf(w, "INSERTED %v RECORDS (%s)", n, instanceID)
 }
 
 func read(w http.ResponseWriter, req *http.Request) {
@@ -122,7 +123,7 @@ func read(w http.ResponseWriter, req *http.Request) {
 	for rows.Next() {
 		err = rows.Scan(&name)
 		check(err)
-		fmt.Fprintln(w, "RETRIEVED RECORD:", name)
+		fmt.Fprintf(w, "RETRIEVED RECORD: %v (%s)\n", name, instanceID)
 	}
 }
 
@@ -137,7 +138,7 @@ func update(w http.ResponseWriter, req *http.Request) {
 	n, err := r.RowsAffected()
 	check(err)
 
-	fmt.Fprintln(w, "UPDATED RECORD", n)
+	fmt.Fprintf(w, "UPDATED %v RECORDS (%s)", n, instanceID)
 }
 
 func del(w http.ResponseWriter, req *http.Request) {
@@ -151,7 +152,7 @@ func del(w http.ResponseWriter, req *http.Request) {
 	n, err := r.RowsAffected()
 	check(err)
 
-	fmt.Fprintln(w, "DELETED RECORD", n)
+	fmt.Fprintf(w, "DELETED %v RECORDS (%s)", n, instanceID)
 }
 
 func drop(w http.ResponseWriter, req *http.Request) {
@@ -163,9 +164,7 @@ func drop(w http.ResponseWriter, req *http.Request) {
 	check(err)
 
 	fmt.Fprintln(w, "DROPPED TABLE customer")
-
 }
-*/
 
 func check(err error) {
 	if err != nil {
