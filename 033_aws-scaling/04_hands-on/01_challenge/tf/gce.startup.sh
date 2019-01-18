@@ -1,33 +1,34 @@
 #!/usr/bin/env bash
-set -uo pipefail
+set -euo pipefail
 IFS=$'\n\t'
 
 function log(){
-    echo "$1" >> /home/jameslucktaylor/specific-startup-script.log
+    echo "[$(date '+%Y%m%d.%H%M%S.%N%z')] $1" >> /home/jameslucktaylor/gce.startup.log
 }
 
-log "start of startup script"
+# Timestamp start
+log "cloud-init: start"
 
-log "apt things"
-# Run patches and install git client
-apt update
-apt upgrade --assume-yes --no-install-recommends
-# apt-get install --assume-yes --no-install-recommends git
-
-log "setting a trap for someone specific"
 # Drop a note when this script is done (note: 'done' might include exiting prematurely due to an error!)
-trap "log DONE" INT TERM EXIT
-log "specific trap set"
+trap "log 'cloud-init: finish'" INT TERM EXIT
 
-log "start touching!"
-touch "/home/jameslucktaylor/touch.file.1"
-log "after touch call"
+log "Running 'apt'..."
+# Run patches and install golang
+log "'apt update'..."
+apt update
+log "'apt upgrade'..."
+apt upgrade --assume-yes --no-install-recommends
+log "'apt install golang-go'..."
+apt install golang-go --assume-yes --no-install-recommends
+log "'apt autoremove'..."
+apt autoremove --assume-yes
+log "Finished 'apt'."
 
-log "wait who am i again"
-log "$(whoami)"
+log "Fetching main.go from GitHub..."
+curl https://raw.githubusercontent.com/jlucktay/golang-web-dev/master/033_aws-scaling/04_hands-on/01_challenge/tf/go/main.go | sudo -u jameslucktaylor tee /home/jameslucktaylor/main.go
+log "Fetched main.go from GitHub."
 
-log "catting .go"
-cat > "/home/jameslucktaylor/main.go" <<'EOF'
-${main_go}
-EOF
-log "finished catting"
+# log "Building 'revolver' binary..."
+# go build -o revolver -a -ldflags '-extldflags "-static"' .
+# # echo "Hello, World" > index.html
+# # nohup busybox httpd -f -p 8080 &
