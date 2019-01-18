@@ -1,17 +1,17 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
-	// _ "github.com/go-sql-driver/mysql"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
-/*
 var db *sql.DB
 var err error
-*/
 var instanceID string
 
 func init() {
@@ -35,14 +35,13 @@ func init() {
 }
 
 func main() {
-	/*
-		db, err = sql.Open("mysql", "awsuser:mypassword@tcp(mydbinstance.cakwl95bxza0.us-west-1.rds.amazonaws.com:3306)/test02?charset=utf8")
-		check(err)
-		defer db.Close()
+	db, err = sql.Open("mysql", "default:5554d62a058ebe62@tcp(172.28.64.3:3306)/pocket01?charset=utf8mb4")
+	check(err)
+	defer db.Close()
 
-		err = db.Ping()
-		check(err)
-	*/
+	err = db.Ping()
+	check(err)
+
 	// barebones server to start with
 	http.HandleFunc("/", index)
 	http.Handle("/favicon.ico", http.NotFoundHandler())
@@ -166,10 +165,10 @@ func drop(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintln(w, "DROPPED TABLE customer")
 
 }
+*/
 
 func check(err error) {
 	if err != nil {
 		fmt.Println(err)
 	}
 }
-*/
