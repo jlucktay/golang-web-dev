@@ -9,16 +9,15 @@ function log(){
 # Timestamp start
 log "cloud-init: start"
 
-echo one >> /home/jameslucktaylor/gce.startup.log
-
 # Drop a note when this script is done (note: 'done' might include exiting prematurely due to an error!)
 trap "log 'cloud-init: finish'" INT TERM EXIT
 
-echo two >> /home/jameslucktaylor/gce.startup.log
-
 # log "Catting '.toprc'..."
 # sudo -u jameslucktaylor tee /home/jameslucktaylor/.toprc <<'EOF'
-# ${toprc}
+# $
+# {
+# toprc
+# }
 # EOF
 # log "Catted '.toprc'."
 
