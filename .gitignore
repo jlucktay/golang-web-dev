@@ -89,4 +89,4 @@ override.tf.json
 # End of https://www.gitignore.io/api/terraform
 
 # Secrets
-031_aws/02_hands-on/01_challenge/tf/golang-web-dev-b8f5f688f0c9.json
+golang-web-dev-b8f5f688f0c9.json
