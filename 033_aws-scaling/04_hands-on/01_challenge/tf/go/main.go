@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -57,7 +58,7 @@ func main() {
 }
 
 func index(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprintf(w, "Hello from GCP. (%s)", instanceID)
+	fmt.Fprintf(w, "Hello from %s. (%s)", strings.ToUpper(cloudPlatform), instanceID)
 }
 
 func ping(w http.ResponseWriter, req *http.Request) {
