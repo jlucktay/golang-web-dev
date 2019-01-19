@@ -7,6 +7,7 @@ GoSource="$UserHome/main.go"
 ServiceName="revolver"
 Binary="$UserHome/$ServiceName"
 ServiceFile="/etc/systemd/system/$ServiceName.service"
+GitHubRepoBase="https://raw.githubusercontent.com/jlucktay/golang-web-dev/master/033_aws-scaling/04_hands-on/01_challenge/tf"
 
 function log(){
     echo "[$(date '+%Y%m%d.%H%M%S.%N%z')] $1" | sudo -u jameslucktaylor tee --append $LogFile
@@ -15,11 +16,9 @@ function log(){
 log "cloud-init: start"
 trap "log 'cloud-init: finish'" INT TERM EXIT
 
-# log "Catting '.toprc'..."
-# sudo -u jameslucktaylor tee /home/jameslucktaylor/.toprc <<'EOF'
-# ${toprc}
-# EOF
-# log "Catted '.toprc'."
+log "Getting .toprc from GitHub..."
+curl "$GitHubRepoBase/.toprc" | sudo -u jameslucktaylor tee /home/jameslucktaylor/.toprc
+log "Got .toprc from GitHub."
 
 log "Running 'apt'..."
 log "'apt update'..."
@@ -37,7 +36,7 @@ go get -d -u -v github.com/go-sql-driver/mysql | sudo -u jameslucktaylor tee --a
 log "Got mysql dependency."
 
 log "Fetching main.go from GitHub..."
-curl https://raw.githubusercontent.com/jlucktay/golang-web-dev/master/033_aws-scaling/04_hands-on/01_challenge/tf/go/main.go | sudo -u jameslucktaylor tee $GoSource
+curl "$GitHubRepoBase/go/main.go" | sudo -u jameslucktaylor tee $GoSource
 log "Fetched main.go from GitHub."
 
 log "Building '$ServiceName' binary..."

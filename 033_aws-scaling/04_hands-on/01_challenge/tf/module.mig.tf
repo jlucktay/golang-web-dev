@@ -11,7 +11,7 @@ module "mig" {
   region            = "${local.region}"
   service_port      = "${local.service_port}"
   service_port_name = "http"
-  startup_script    = "${data.template_file.gce_startup.rendered}"
+  startup_script    = "${file("${path.module}/gce.startup.sh")}"
   size              = 3
   target_tags       = "${local.target_tags}"
   update_strategy   = "ROLLING_UPDATE"
