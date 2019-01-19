@@ -173,6 +173,11 @@ func check(err error) {
 }
 
 func getInstanceID() string {
+	host, errHost := os.Hostname()
+	if errHost != nil {
+		log.Fatal(errHost)
+	}
+
 	req, errReq := http.NewRequest("GET", metadataURL[cloudPlatform], nil)
 	if errReq != nil {
 		log.Fatal(errReq)
@@ -191,7 +196,7 @@ func getInstanceID() string {
 	resp.Body.Read(bs)
 	resp.Body.Close()
 
-	return string(bs)
+	return fmt.Sprintf("host: %s (id: %s)", host, string(bs))
 }
 
 func mustEnv(key string) string {
