@@ -13,14 +13,3 @@ module "sql" {
     },
   ]
 }
-
-# https://github.com/GoogleCloudPlatform/terraform-google-sql-db/blob/master/variables.tf
-/*
-module "mysql-db" {
-  database_flags = [
-    {
-      name  = "log_bin_trust_function_creators"
-      value = "on"
-    },
-  ]
-*/
