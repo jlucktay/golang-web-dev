@@ -6,41 +6,50 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
-var db *sql.DB
-var err error
-var instanceID string
+const (
+	cloudPlatform = "gcp" // switch to "aws" if necessary
+	connFormat    = "default:%s@tcp(%s:3306)/pocket01?charset=utf8mb4"
+)
+
+var (
+	db         *sql.DB
+	errOpen    error
+	instanceID string
+
+	metadataURL = map[string]string{
+		"aws": "http://169.254.169.254/latest/meta-data/instance-id",
+		"gcp": "http://metadata.google.internal/computeMetadata/v1/instance/id",
+	}
+)
 
 func init() {
-	req, errReq := http.NewRequest("GET", "http://metadata.google.internal/computeMetadata/v1/instance/id", nil)
-	if errReq != nil {
-		log.Fatal(errReq)
+	instanceID = getInstanceID()
+
+	mysqlIP, ipOK := os.LookupEnv("MYSQL_IP")
+	if !ipOK || len(mysqlIP) == 0 {
+		log.Fatal("could not find MYSQL_IP in environment")
 	}
 
-	req.Header.Add("Metadata-Flavor", "Google")
-
-	resp, errResp := http.DefaultClient.Do(req)
-	if errResp != nil {
-		log.Fatal(errResp)
+	mysqlPassword, passwordOK := os.LookupEnv("MYSQL_PASSWORD")
+	if !passwordOK || len(mysqlPassword) == 0 {
+		log.Fatal("could not find MYSQL_PASSWORD in environment")
 	}
 
-	bs := make([]byte, resp.ContentLength)
-	resp.Body.Read(bs)
-	resp.Body.Close()
-
-	instanceID = string(bs)
+	connString := fmt.Sprintf(connFormat, mysqlPassword, mysqlIP)
+	db, errOpen = sql.Open("mysql", connString)
+	check(errOpen)
 }
 
 func main() {
-	db, err = sql.Open("mysql", "default:5554d62a058ebe62@tcp(172.28.64.3:3306)/pocket01?charset=utf8mb4")
-	check(err)
 	defer db.Close()
 
-	err = db.Ping()
-	check(err)
+	errPing := db.Ping()
+	check(errPing)
 
 	http.HandleFunc("/", index)
 	http.Handle("/favicon.ico", http.NotFoundHandler())
@@ -168,6 +177,28 @@ func drop(w http.ResponseWriter, req *http.Request) {
 
 func check(err error) {
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
+}
+
+func getInstanceID() string {
+	req, errReq := http.NewRequest("GET", metadataURL[cloudPlatform], nil)
+	if errReq != nil {
+		log.Fatal(errReq)
+	}
+
+	if cloudPlatform == "gcp" {
+		req.Header.Add("Metadata-Flavor", "Google")
+	}
+
+	resp, errResp := http.DefaultClient.Do(req)
+	if errResp != nil {
+		log.Fatal(errResp)
+	}
+
+	bs := make([]byte, resp.ContentLength)
+	resp.Body.Read(bs)
+	resp.Body.Close()
+
+	return string(bs)
 }

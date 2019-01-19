@@ -17,7 +17,7 @@ log "cloud-init: start"
 trap "log 'cloud-init: finish'" INT TERM EXIT
 
 log "Getting .toprc from GitHub..."
-curl "$GitHubRepoBase/.toprc" | sudo -u jameslucktaylor tee /home/jameslucktaylor/.toprc
+curl --silent "$GitHubRepoBase/.toprc" 2>&1 | sudo -u jameslucktaylor tee /home/jameslucktaylor/.toprc
 log "Got .toprc from GitHub."
 
 log "Running 'apt'..."
@@ -32,15 +32,15 @@ apt autoremove --assume-yes
 log "Finished 'apt'."
 
 log "Getting mysql dependency..."
-go get -d -u -v github.com/go-sql-driver/mysql | sudo -u jameslucktaylor tee --append $LogFile
+sudo -u jameslucktaylor go get -d -u -v github.com/go-sql-driver/mysql 2>&1 | sudo -u jameslucktaylor tee --append $LogFile
 log "Got mysql dependency."
 
 log "Fetching main.go from GitHub..."
-curl "$GitHubRepoBase/go/main.go" | sudo -u jameslucktaylor tee $GoSource
+curl --silent "$GitHubRepoBase/go/main.go" 2>&1 | sudo -u jameslucktaylor tee $GoSource
 log "Fetched main.go from GitHub."
 
 log "Building '$ServiceName' binary..."
-go build -o $Binary -a -ldflags '-extldflags "-static"' -v -work $GoSource >> $LogFile 2>&1
+sudo -u jameslucktaylor go build -o $Binary -a -ldflags '-extldflags "-static"' $GoSource 2>&1 | sudo -u jameslucktaylor tee --append $LogFile
 log "Built '$ServiceName' binary."
 
 log "Catting '$ServiceFile'..."
@@ -58,6 +58,8 @@ tee --append $ServiceFile <<'EOF'
 User=root
 Group=root
 Restart=always
+Environment="MYSQL_IP=${mysql_ip}"
+Environment="MYSQL_PASSWORD=${mysql_password}"
 
 [Install]
 WantedBy=multi-user.target
