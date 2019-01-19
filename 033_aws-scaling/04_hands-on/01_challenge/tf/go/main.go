@@ -29,18 +29,7 @@ var (
 
 func init() {
 	instanceID = getInstanceID()
-
-	mysqlIP, ipOK := os.LookupEnv("MYSQL_IP")
-	if !ipOK || len(mysqlIP) == 0 {
-		log.Fatal("could not find MYSQL_IP in environment")
-	}
-
-	mysqlPassword, passwordOK := os.LookupEnv("MYSQL_PASSWORD")
-	if !passwordOK || len(mysqlPassword) == 0 {
-		log.Fatal("could not find MYSQL_PASSWORD in environment")
-	}
-
-	connString := fmt.Sprintf(connFormat, mysqlPassword, mysqlIP)
+	connString := fmt.Sprintf(connFormat, mustEnv("MYSQL_PASSWORD"), mustEnv("MYSQL_IP"))
 	db, errOpen = sql.Open("mysql", connString)
 	check(errOpen)
 }
@@ -201,4 +190,13 @@ func getInstanceID() string {
 	resp.Body.Close()
 
 	return string(bs)
+}
+
+func mustEnv(key string) string {
+	val, ok := os.LookupEnv(key)
+	if !ok || len(val) == 0 {
+		log.Fatalf("could not find a value for key '%s' in environment", key)
+	}
+
+	return val
 }

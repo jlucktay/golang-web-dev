@@ -1,3 +1,3 @@
-output "lb_ip" {
-  value = "${module.lb.external_ip}"
+output lb {
+  value = "http://${module.lb.external_ip}"
 }
