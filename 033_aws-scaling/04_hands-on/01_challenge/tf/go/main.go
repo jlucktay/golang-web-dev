@@ -95,7 +95,7 @@ func create(w http.ResponseWriter, req *http.Request) {
 	n, err := r.RowsAffected()
 	check(err)
 
-	fmt.Fprintf(w, "CREATED TABLE customer with %v rows (%s)", n, instanceID)
+	fmt.Fprintf(w, "CREATED TABLE customer with %v rows (instance: %s)", n, instanceID)
 }
 
 func insert(w http.ResponseWriter, req *http.Request) {
@@ -109,7 +109,7 @@ func insert(w http.ResponseWriter, req *http.Request) {
 	n, err := r.RowsAffected()
 	check(err)
 
-	fmt.Fprintf(w, "INSERTED %v RECORDS (%s)", n, instanceID)
+	fmt.Fprintf(w, "INSERTED %v RECORDS (instance: %s)", n, instanceID)
 }
 
 func read(w http.ResponseWriter, req *http.Request) {
@@ -117,11 +117,13 @@ func read(w http.ResponseWriter, req *http.Request) {
 	check(err)
 	defer rows.Close()
 
+	fmt.Fprintf(w, "Instance: %s\n\n", instanceID)
+
 	var name string
 	for rows.Next() {
 		err = rows.Scan(&name)
 		check(err)
-		fmt.Fprintf(w, "RETRIEVED RECORD: %v (%s)\n", name, instanceID)
+		fmt.Fprintf(w, "RETRIEVED RECORD: %v\n", name)
 	}
 }
 
@@ -136,7 +138,7 @@ func update(w http.ResponseWriter, req *http.Request) {
 	n, err := r.RowsAffected()
 	check(err)
 
-	fmt.Fprintf(w, "UPDATED %v RECORDS (%s)", n, instanceID)
+	fmt.Fprintf(w, "UPDATED %v RECORDS (instance: %s)", n, instanceID)
 }
 
 func del(w http.ResponseWriter, req *http.Request) {
@@ -150,7 +152,7 @@ func del(w http.ResponseWriter, req *http.Request) {
 	n, err := r.RowsAffected()
 	check(err)
 
-	fmt.Fprintf(w, "DELETED %v RECORDS (%s)", n, instanceID)
+	fmt.Fprintf(w, "DELETED %v RECORDS (instance: %s)", n, instanceID)
 }
 
 func drop(w http.ResponseWriter, req *http.Request) {
