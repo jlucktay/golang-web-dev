@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title></title>
@@ -10,6 +11,7 @@
             justify-content: center;
             align-items: center;
         }
+
         h1 {
             font-size: 5vw;
             cursor: pointer;
@@ -17,34 +19,31 @@
         }
     </style>
 </head>
+
 <body>
+    <h1>Make a request</h1>
+    <script>
+        document.querySelector('h1').onclick = makeRequest;
 
-<h1>Make a request</h1>
+        function makeRequest() {
+            // create a XMLHttpRequest
+            var xhr = new XMLHttpRequest();
 
-<script>
-    document.querySelector('h1').onclick = makeRequest;
+            // open the request
+            xhr.open('GET', 'test.html');
 
+            // handles the response
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    alert(xhr.responseText);
+                }
+            };
 
-    function makeRequest() {
+            // send the request
+            xhr.send();
+        }
 
-        // create a  XMLHttpRequest
-        var xhr = new XMLHttpRequest();
-
-        // open the request
-        xhr.open('GET', 'test.html');
-
-        // handles the response
-        xhr.onreadystatechange = function () {
-            if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200){
-                alert(xhr.responseText);
-            }
-        };
-
-        // send the request
-        xhr.send();
-    }
-
-
-</script>
+    </script>
 </body>
+
 </html>
