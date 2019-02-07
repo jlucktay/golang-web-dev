@@ -62,7 +62,7 @@ func auth(w http.ResponseWriter, req *http.Request) {
 	xs := strings.Split(c.Value, "|")
 	email := xs[0]
 	codeRcvd := xs[1]
-	codeCheck := getCode(email + "s")
+	codeCheck := getCode(email)
 
 	if codeRcvd != codeCheck {
 		fmt.Println("HMAC codes didn't match")
