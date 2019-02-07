@@ -5,17 +5,18 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"io"
+	"log"
 )
 
 func main() {
-	c := getCode("test@example.com")
-	fmt.Println(c)
-	c = getCode("test@exampl.com")
-	fmt.Println(c)
+	fmt.Println(getCode("test@example.com"))
+	fmt.Println(getCode("test@exampl.com"))
 }
 
 func getCode(s string) string {
 	h := hmac.New(sha256.New, []byte("ourkey"))
-	io.WriteString(h, s)
-	return fmt.Sprintf("%x", h.Sum(nil))
+	if _, err := io.WriteString(h, s); err != nil {
+		log.Fatal(err)
+	}
+	return fmt.Sprintf("% x", h.Sum(nil))
 }
