@@ -3,13 +3,15 @@ package main
 import (
 	"crypto/sha1"
 	"fmt"
-	"github.com/satori/go.uuid"
 	"html/template"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 var tpl *template.Template
@@ -21,11 +23,12 @@ func init() {
 func main() {
 	http.HandleFunc("/", index)
 	http.Handle("/favicon.ico", http.NotFoundHandler())
-	http.ListenAndServe(":8080", nil)
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
 func index(w http.ResponseWriter, req *http.Request) {
 	c := getCookie(w, req)
+
 	// process form submission
 	if req.Method == http.MethodPost {
 		mf, fh, err := req.FormFile("nf")
@@ -33,11 +36,16 @@ func index(w http.ResponseWriter, req *http.Request) {
 			fmt.Println(err)
 		}
 		defer mf.Close()
+
 		// create sha for file name
-		ext := strings.Split(fh.Filename, ".")[1]
+		xfn := strings.Split(fh.Filename, ".")
+		ext := xfn[len(xfn)-1]
 		h := sha1.New()
-		io.Copy(h, mf)
+		if _, errCopy := io.Copy(h, mf); errCopy != nil {
+			log.Fatal(errCopy)
+		}
 		fname := fmt.Sprintf("%x", h.Sum(nil)) + "." + ext
+
 		// create new file
 		wd, err := os.Getwd()
 		if err != nil {
@@ -49,14 +57,22 @@ func index(w http.ResponseWriter, req *http.Request) {
 			fmt.Println(err)
 		}
 		defer nf.Close()
+
 		// copy
-		mf.Seek(0, 0)
-		io.Copy(nf, mf)
+		if _, errSeek := mf.Seek(0, 0); errSeek != nil {
+			log.Fatal(errSeek)
+		}
+		if _, errCopy := io.Copy(nf, mf); errCopy != nil {
+			log.Fatal(errCopy)
+		}
+
 		// add filename to this user's cookie
 		c = appendValue(w, c, fname)
 	}
 	xs := strings.Split(c.Value, "|")
-	tpl.ExecuteTemplate(w, "index.gohtml", xs)
+	if err := tpl.ExecuteTemplate(w, "index.gohtml", xs); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func getCookie(w http.ResponseWriter, req *http.Request) *http.Cookie {
