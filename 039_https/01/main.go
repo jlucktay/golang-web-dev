@@ -1,17 +1,30 @@
 package main
 
 import (
+	"log"
 	"net/http"
+	"os"
+	"path"
 )
 
 func main() {
 	http.HandleFunc("/", foo)
-	http.ListenAndServeTLS(":10443", "cert.pem", "key.pem", nil)
+
+	certDir := os.ExpandEnv("${HOME}/cert/")
+
+	log.Fatal(http.ListenAndServeTLS(
+		"localhost:10443",
+		path.Join(certDir, "localhost.pem"),
+		path.Join(certDir, "localhost-key.pem"),
+		nil,
+	))
 }
 
 func foo(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "text/plain")
-	w.Write([]byte("This is an example server.\n"))
+	if _, err := w.Write([]byte("This is an example server.\n")); err != nil {
+		log.Fatal(err)
+	}
 }
 
 // Go to https://localhost:10443/ or https://127.0.0.1:10443/
