@@ -1,10 +1,14 @@
 package main
 
 import (
-	"github.com/satori/go.uuid"
 	"html/template"
+	"log"
 	"net/http"
+
+	uuid "github.com/satori/go.uuid"
 )
+
+const cookieName = "session"
 
 var tpl *template.Template
 
@@ -15,21 +19,23 @@ func init() {
 func main() {
 	http.HandleFunc("/", index)
 	http.Handle("/favicon.ico", http.NotFoundHandler())
-	http.ListenAndServe(":8080", nil)
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
 func index(w http.ResponseWriter, req *http.Request) {
 	c := getCookie(w, req)
-	tpl.ExecuteTemplate(w, "index.gohtml", c.Value)
+	if err := tpl.ExecuteTemplate(w, "index.gohtml", c.Value); err != nil {
+		log.Fatal(err)
+	}
 }
 
 // add func to get cookie
 func getCookie(w http.ResponseWriter, req *http.Request) *http.Cookie {
-	c, err := req.Cookie("session")
+	c, err := req.Cookie(cookieName)
 	if err != nil {
-		sID, _ := uuid.NewV4()
+		sID := uuid.Must(uuid.NewV4())
 		c = &http.Cookie{
-			Name:  "session",
+			Name:  cookieName,
 			Value: sID.String(),
 		}
 		http.SetCookie(w, c)
