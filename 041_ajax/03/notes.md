@@ -1,10 +1,10 @@
-# Step 1: 
+# Step 1:
 Created type session which is a struct with a lastActivity field. This will allow us to know the last time a session was used.
 
 # Step 2:
 Updated dbSessions to be of type map[string]session
 
-# Step 3: 
+# Step 3:
 Updated all reads/writes to dbSessions
 
 # Step 4:
@@ -22,5 +22,3 @@ Added dbSessionsCleaned time.Time to keep track of the last time we cleaned out 
 
 # Step 7:
 Added func cleanSessions to remove unused sessions from dbSessions. Set it to run whenever someone logs out and a certain amount of time has elapsed (in production you'd set this to run during a time when the server wasn't busy).
-
-

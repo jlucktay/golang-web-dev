@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/satori/go.uuid"
 	"net/http"
 	"time"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 func getUser(w http.ResponseWriter, req *http.Request) user {
@@ -16,7 +17,6 @@ func getUser(w http.ResponseWriter, req *http.Request) user {
 			Name:  "session",
 			Value: sID.String(),
 		}
-
 	}
 	c.MaxAge = sessionLength
 	http.SetCookie(w, c)
@@ -42,6 +42,7 @@ func alreadyLoggedIn(w http.ResponseWriter, req *http.Request) bool {
 		dbSessions[c.Value] = s
 	}
 	_, ok = dbUsers[s.un]
+
 	// refresh session
 	c.MaxAge = sessionLength
 	http.SetCookie(w, c)
@@ -52,7 +53,7 @@ func cleanSessions() {
 	fmt.Println("BEFORE CLEAN") // for demonstration purposes
 	showSessions()              // for demonstration purposes
 	for k, v := range dbSessions {
-		if time.Now().Sub(v.lastActivity) > (time.Second * 30) {
+		if time.Since(v.lastActivity) > (time.Second * 30) {
 			delete(dbSessions, k)
 		}
 	}
@@ -65,7 +66,7 @@ func cleanSessions() {
 func showSessions() {
 	fmt.Println("********")
 	for k, v := range dbSessions {
-		fmt.Println(k, v.un)
+		fmt.Println(k, v.lastActivity, v.un)
 	}
-	fmt.Println("")
+	fmt.Println()
 }
