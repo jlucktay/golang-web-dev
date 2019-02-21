@@ -19,6 +19,7 @@ func main() {
 	r.GET("/user/:id", uc.GetUser)
 	r.POST("/user", uc.CreateUser)
 	r.DELETE("/user/:id", uc.DeleteUser)
+	r.HEAD("/user/reset", uc.ResetUsers)
 	log.Fatal(http.ListenAndServe("localhost:8080", r))
 }
 

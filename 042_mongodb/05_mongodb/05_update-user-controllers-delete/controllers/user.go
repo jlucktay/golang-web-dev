@@ -90,3 +90,14 @@ func (uc UserController) DeleteUser(w http.ResponseWriter, r *http.Request, p ht
 	w.WriteHeader(http.StatusOK) // 200
 	fmt.Fprintf(w, "Deleted %d user(s): %v\n", dr.DeletedCount, oid)
 }
+
+func (uc UserController) ResetUsers(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	if err := uc.users.Drop(context.Background()); err != nil {
+		w.WriteHeader(http.StatusInternalServerError) // 500
+		return
+	}
+
+	fmt.Println("dropped users collection")
+	w.WriteHeader(http.StatusOK) // 200
+	fmt.Fprint(w, "dropped users collection\n")
+}
