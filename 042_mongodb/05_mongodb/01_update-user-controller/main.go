@@ -1,10 +1,12 @@
 package main
 
 import (
-	"github.com/GoesToEleven/golang-web-dev/042_mongodb/05_mongodb/01_update-user-controller/controllers"
-	"github.com/julienschmidt/httprouter"
 	"gopkg.in/mgo.v2"
+	"log"
 	"net/http"
+
+	"github.com/jlucktay/golang-web-dev/042_mongodb/05_mongodb/01_update-user-controller/controllers"
+	"github.com/julienschmidt/httprouter"
 )
 
 func main() {
@@ -14,7 +16,7 @@ func main() {
 	r.GET("/user/:id", uc.GetUser)
 	r.POST("/user", uc.CreateUser)
 	r.DELETE("/user/:id", uc.DeleteUser)
-	http.ListenAndServe("localhost:8080", r)
+	log.Fatal(http.ListenAndServe("localhost:8080", r))
 }
 
 func getSession() *mgo.Session {
