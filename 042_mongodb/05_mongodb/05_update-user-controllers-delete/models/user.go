@@ -1,6 +1,6 @@
 package models
 
-import "gopkg.in/mgo.v2/bson"
+import "github.com/mongodb/mongo-go-driver/bson"
 
 type User struct {
 	Id     bson.ObjectId `json:"id" bson:"_id"`

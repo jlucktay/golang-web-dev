@@ -2,10 +2,11 @@ package main
 
 import (
 	"github.com/julienschmidt/httprouter"
-	"gopkg.in/mgo.v2"
+	"github.com/mongodb/mongo-go-driver/mongo"
+
 	"net/http"
 
-	"github.com/GoesToEleven/golang-web-dev/042_mongodb/05_mongodb/05_update-user-controllers-delete/controllers"
+	"github.com/jlucktay/golang-web-dev/042_mongodb/05_mongodb/05_update-user-controllers-delete/controllers"
 )
 
 func main() {
@@ -17,8 +18,8 @@ func main() {
 	http.ListenAndServe("localhost:8080", r)
 }
 
-func getSession() *mgo.Session {
-	s, err := mgo.Dial("mongodb://localhost")
+func getSession() *mongo.Session {
+	s, err := mongo.Dial("mongodb://localhost")
 
 	if err != nil {
 		panic(err)

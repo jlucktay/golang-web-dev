@@ -3,18 +3,21 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/GoesToEleven/golang-web-dev/042_mongodb/05_mongodb/05_update-user-controllers-delete/models"
+
+	"github.com/jlucktay/golang-web-dev/042_mongodb/05_mongodb/05_update-user-controllers-delete/models"
 	"github.com/julienschmidt/httprouter"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+
+	"github.com/mongodb/mongo-go-driver/bson"
+	"github.com/mongodb/mongo-go-driver/mongo"
+
 	"net/http"
 )
 
 type UserController struct {
-	session *mgo.Session
+	session *mongo.Session
 }
 
-func NewUserController(s *mgo.Session) *UserController {
+func NewUserController(s *mongo.Session) *UserController {
 	return &UserController{s}
 }
 
