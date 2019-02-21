@@ -1,40 +1,40 @@
 package controllers
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"log"
+	"net/http"
 
 	"github.com/jlucktay/golang-web-dev/042_mongodb/05_mongodb/05_update-user-controllers-delete/models"
 	"github.com/julienschmidt/httprouter"
-
-	"github.com/mongodb/mongo-go-driver/bson"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/mongodb/mongo-go-driver/mongo"
-
-	"net/http"
 )
 
 type UserController struct {
-	session *mongo.Session
+	users *mongo.Collection
 }
 
-func NewUserController(s *mongo.Session) *UserController {
-	return &UserController{s}
+func NewUserController(c *mongo.Collection) *UserController {
+	return &UserController{c}
 }
 
 func (uc UserController) GetUser(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	id := p.ByName("id")
+	oid, errIDHex := primitive.ObjectIDFromHex(id)
 
-	if !bson.IsObjectIdHex(id) {
+	if errIDHex != nil {
 		w.WriteHeader(http.StatusNotFound) // 404
 		return
 	}
 
-	oid := bson.ObjectIdHex(id)
-
 	u := models.User{}
 
-	if err := uc.session.DB("go-web-dev-db").C("users").FindId(oid).One(&u); err != nil {
-		w.WriteHeader(404)
+	// Read user
+	if err := uc.users.FindOne(context.Background(), oid).Decode(&u); err == nil {
+		w.WriteHeader(http.StatusNotFound) // 404
 		return
 	}
 
@@ -51,11 +51,16 @@ func (uc UserController) GetUser(w http.ResponseWriter, r *http.Request, p httpr
 func (uc UserController) CreateUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	u := models.User{}
 
-	json.NewDecoder(r.Body).Decode(&u)
+	if errDecode := json.NewDecoder(r.Body).Decode(&u); errDecode != nil {
+		log.Fatal(errDecode)
+	}
 
-	u.Id = bson.NewObjectId()
+	u.Id = primitive.NewObjectID()
 
-	uc.session.DB("go-web-dev-db").C("users").Insert(u)
+	// Create user
+	if _, errInsert := uc.users.InsertOne(context.Background(), u); errInsert != nil {
+		log.Fatal(errInsert)
+	}
 
 	uj, err := json.Marshal(u)
 	if err != nil {
@@ -69,20 +74,19 @@ func (uc UserController) CreateUser(w http.ResponseWriter, r *http.Request, _ ht
 
 func (uc UserController) DeleteUser(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	id := p.ByName("id")
-
-	if !bson.IsObjectIdHex(id) {
-		w.WriteHeader(404)
+	oid, errIDHex := primitive.ObjectIDFromHex(id)
+	if errIDHex != nil {
+		w.WriteHeader(http.StatusNotFound) // 404
 		return
 	}
 
-	oid := bson.ObjectIdHex(id)
-
 	// Delete user
-	if err := uc.session.DB("go-web-dev-db").C("users").RemoveId(oid); err != nil {
+	dr, errDelete := uc.users.DeleteOne(context.Background(), oid)
+	if errDelete != nil {
 		w.WriteHeader(404)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK) // 200
-	fmt.Fprint(w, "Deleted user", oid, "\n")
+	fmt.Fprintf(w, "Deleted %d user(s): %v\n", dr.DeletedCount, oid)
 }

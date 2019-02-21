@@ -1,12 +1,11 @@
 package main
 
 import (
-	"github.com/julienschmidt/httprouter"
-	"github.com/mongodb/mongo-go-driver/mongo"
-
 	"net/http"
 
 	"github.com/jlucktay/golang-web-dev/042_mongodb/05_mongodb/05_update-user-controllers-delete/controllers"
+	"github.com/julienschmidt/httprouter"
+	"github.com/mongodb/mongo-go-driver/mongo"
 )
 
 func main() {
