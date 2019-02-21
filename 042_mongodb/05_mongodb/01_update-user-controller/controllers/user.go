@@ -13,11 +13,11 @@ import (
 
 // added session to our userController
 type UserController struct {
-	client *mongo.Client
+	users *mongo.Collection
 }
 
 // added session to our userController
-func NewUserController(c *mongo.Client) *UserController {
+func NewUserController(c *mongo.Collection) *UserController {
 	return &UserController{c}
 }
 

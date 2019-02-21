@@ -16,14 +16,14 @@ import (
 func main() {
 	r := httprouter.New()
 	// Get a UserController instance
-	uc := controllers.NewUserController(getClient())
+	uc := controllers.NewUserController(getUserCollection())
 	r.GET("/user/:id", uc.GetUser)
 	r.POST("/user", uc.CreateUser)
 	r.DELETE("/user/:id", uc.DeleteUser)
 	log.Fatal(http.ListenAndServe("localhost:8080", r))
 }
 
-func getClient() mongo.Client {
+func getUserCollection() *mongo.Collection {
 	// Connect to our local mongo
 	ctx, _ := context.WithTimeout(context.Background(), 3*time.Second)
 	client, errConnect := mongo.Connect(ctx, "mongodb://localhost:27017")
@@ -39,5 +39,7 @@ func getClient() mongo.Client {
 
 	fmt.Println("Looks like we have successfully connected to MongoDB!")
 
-	return *client
+	collection := client.Database("042_mongodb").Collection("01_users")
+
+	return collection
 }
