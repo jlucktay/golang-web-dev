@@ -24,28 +24,28 @@ func NewUserController(c *mongo.Collection) *UserController {
 func (uc UserController) GetUser(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	id := p.ByName("id")
 	oid, errIDHex := primitive.ObjectIDFromHex(id)
-
 	if errIDHex != nil {
 		w.WriteHeader(http.StatusNotFound) // 404
 		return
 	}
 
-	u := models.User{}
-
 	// Read user
-	if err := uc.users.FindOne(context.Background(), oid).Decode(&u); err == nil {
-		w.WriteHeader(http.StatusNotFound) // 404
+	u := models.User{}
+	readUser := uc.users.FindOne(
+		context.Background(),
+		primitive.D{
+			{Key: "_id", Value: oid},
+		},
+	)
+	if errDecode := readUser.Decode(&u); errDecode != nil {
+		w.WriteHeader(http.StatusInternalServerError) // 500
+		fmt.Fprint(w, "error decoding user:", errDecode)
 		return
-	}
-
-	uj, err := json.Marshal(u)
-	if err != nil {
-		fmt.Println(err)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK) // 200
-	fmt.Fprintf(w, "%s\n", uj)
+	fmt.Fprintf(w, "%v\n", u)
 }
 
 func (uc UserController) CreateUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
@@ -55,21 +55,22 @@ func (uc UserController) CreateUser(w http.ResponseWriter, r *http.Request, _ ht
 		log.Fatal(errDecode)
 	}
 
-	u.Id = primitive.NewObjectID()
-
 	// Create user
-	if _, errInsert := uc.users.InsertOne(context.Background(), u); errInsert != nil {
+	insertUser := primitive.D{
+		{Key: "age", Value: u.Age},
+		{Key: "_id", Value: primitive.NewObjectID()},
+		{Key: "name", Value: u.Name},
+		{Key: "gender", Value: u.Gender},
+	}
+	ior, errInsert := uc.users.InsertOne(context.Background(), insertUser)
+	if errInsert != nil {
 		log.Fatal(errInsert)
 	}
 
-	uj, err := json.Marshal(u)
-	if err != nil {
-		fmt.Println(err)
-	}
-
+	fmt.Printf("insert result: %+v\n", ior)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated) // 201
-	fmt.Fprintf(w, "%s\n", uj)
+	fmt.Fprintf(w, "%+v\n", insertUser)
 }
 
 func (uc UserController) DeleteUser(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
@@ -81,12 +82,16 @@ func (uc UserController) DeleteUser(w http.ResponseWriter, r *http.Request, p ht
 	}
 
 	// Delete user
-	dr, errDelete := uc.users.DeleteOne(context.Background(), oid)
+	deleteUser := primitive.D{
+		{Key: "_id", Value: oid},
+	}
+	dr, errDelete := uc.users.DeleteOne(context.Background(), deleteUser)
 	if errDelete != nil {
-		w.WriteHeader(404)
+		w.WriteHeader(http.StatusNotFound) // 404
 		return
 	}
 
+	fmt.Printf("delete result: %+v\n", dr)
 	w.WriteHeader(http.StatusOK) // 200
 	fmt.Fprintf(w, "Deleted %d user(s): %v\n", dr.DeletedCount, oid)
 }
