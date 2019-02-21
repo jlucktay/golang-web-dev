@@ -1,0 +1,24 @@
+# Gopkg.toml
+#
+# Refer to https://golang.github.io/dep/docs/Gopkg.toml.html
+# for detailed Gopkg.toml documentation.
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/GoesToEleven/golang-web-dev"
+
+[[constraint]]
+  name = "github.com/julienschmidt/httprouter"
+  version = "1.2.0"
+
+[[constraint]]
+  branch = "v2"
+  name = "gopkg.in/mgo.v2"
+
+[prune]
+  go-tests = true
+  unused-packages = true
+
+[[constraint]]
+  name = "github.com/mongodb/mongo-go-driver"
+  version = "0.3.0"
