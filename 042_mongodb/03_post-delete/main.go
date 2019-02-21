@@ -3,10 +3,18 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/GoesToEleven/golang-web-dev/042_mongodb/03_post-delete/models"
-	"github.com/julienschmidt/httprouter"
+	"log"
 	"net/http"
+
+	"github.com/jlucktay/golang-web-dev/042_mongodb/03_post-delete/models"
+	"github.com/julienschmidt/httprouter"
 )
+
+var users map[string]models.User
+
+func init() {
+	users = make(map[string]models.User)
+}
 
 func main() {
 	r := httprouter.New()
@@ -16,7 +24,7 @@ func main() {
 	r.POST("/user", createUser)
 	// added route plus parameter
 	r.DELETE("/user/:id", deleteUser)
-	http.ListenAndServe("localhost:8080", r)
+	log.Fatal(http.ListenAndServe("localhost:8080", r))
 }
 
 func index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
@@ -33,19 +41,22 @@ func index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	`
 	w.Header().Set("Content-Type", "text/html; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(s))
+	if _, err := w.Write([]byte(s)); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func getUser(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	u := models.User{
-		Name:   "James Bond",
-		Gender: "male",
-		Age:    32,
-		Id:     p.ByName("id"),
+	existingUser, exists := users[p.ByName("id")]
+
+	if !exists {
+		w.WriteHeader(http.StatusNotFound) // 404
+		fmt.Fprintf(w, "user ID '%s' not found\n", p.ByName("id"))
+		return
 	}
 
 	// Marshal into JSON
-	uj, err := json.Marshal(u)
+	uj, err := json.Marshal(existingUser)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -61,10 +72,17 @@ func createUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	u := models.User{}
 
 	// encode/decode for sending/receiving JSON to/from a stream
-	json.NewDecoder(r.Body).Decode(&u)
+	if err := json.NewDecoder(r.Body).Decode(&u); err != nil {
+		log.Fatal(err)
+	}
 
-	// Change Id
-	u.Id = "007"
+	if _, exists := users[u.Id]; exists {
+		w.WriteHeader(http.StatusConflict) // 409
+		fmt.Fprint(w, "user already exists\n")
+		return
+	}
+
+	users[u.Id] = u
 
 	// marshal/unmarshal for having JSON assigned to a variable
 	uj, _ := json.Marshal(u)
@@ -76,7 +94,14 @@ func createUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 }
 
 func deleteUser(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	// TODO: write code to delete user
+	if _, exists := users[p.ByName("id")]; !exists {
+		w.WriteHeader(http.StatusNotFound) // 404
+		fmt.Fprintf(w, "user ID '%s' not found\n", p.ByName("id"))
+		return
+	}
+
+	delete(users, p.ByName("id"))
+
 	w.WriteHeader(http.StatusOK) // 200
-	fmt.Fprint(w, "Write code to delete user\n")
+	fmt.Fprintf(w, "user ID '%s' deleted\n", p.ByName("id"))
 }
