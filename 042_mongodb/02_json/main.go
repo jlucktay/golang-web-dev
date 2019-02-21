@@ -3,9 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
+	"net/http"
+
 	"github.com/GoesToEleven/golang-web-dev/042_mongodb/02_json/models"
 	"github.com/julienschmidt/httprouter"
-	"net/http"
 )
 
 func main() {
@@ -13,24 +15,26 @@ func main() {
 	r.GET("/", index)
 	// added route plus parameter
 	r.GET("/user/:id", getUser)
-	http.ListenAndServe("localhost:8080", r)
+	log.Fatal(http.ListenAndServe("localhost:8080", r))
 }
 
 func index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	s := `<!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Index</title>
-</head>
-<body>
-<a href="/user/9872309847">GO TO: http://localhost:8080/user/9872309847</a>
-</body>
+	<head>
+		<meta charset="UTF-8">
+		<title>Index</title>
+	</head>
+	<body>
+		<a href="/user/9872309847">GO TO: http://localhost:8080/user/9872309847</a>
+	</body>
 </html>
-	`
+`
 	w.Header().Set("Content-Type", "text/html; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(s))
+	if _, err := w.Write([]byte(s)); err != nil {
+		log.Fatal(err)
+	}
 }
 
 // changed func name
