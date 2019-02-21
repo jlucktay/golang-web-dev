@@ -3,22 +3,22 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	"gopkg.in/mgo.v2"
 	"log"
 	"net/http"
 
 	"github.com/jlucktay/golang-web-dev/042_mongodb/05_mongodb/01_update-user-controller/models"
 	"github.com/julienschmidt/httprouter"
+	"github.com/mongodb/mongo-go-driver/mongo"
 )
 
 // added session to our userController
 type UserController struct {
-	session *mgo.Session
+	client *mongo.Client
 }
 
 // added session to our userController
-func NewUserController(s *mgo.Session) *UserController {
-	return &UserController{s}
+func NewUserController(c *mongo.Client) *UserController {
+	return &UserController{c}
 }
 
 func (uc UserController) GetUser(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
