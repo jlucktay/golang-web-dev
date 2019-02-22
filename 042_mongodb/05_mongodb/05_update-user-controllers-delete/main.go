@@ -14,6 +14,8 @@ import (
 )
 
 func main() {
+	fmt.Printf("[%v] Here we go...\n", time.Now())
+
 	r := httprouter.New()
 	uc := controllers.NewUserController(getUserCollection())
 	r.GET("/user/:id", uc.GetUser)
@@ -37,7 +39,7 @@ func getUserCollection() *mongo.Collection {
 		panic(errPing)
 	}
 
-	fmt.Println("Looks like we have successfully connected to MongoDB!")
+	fmt.Printf("[%v] Looks like we have successfully connected to MongoDB!\n", time.Now())
 
 	collection := client.Database("042_mongodb").Collection("05_users")
 
