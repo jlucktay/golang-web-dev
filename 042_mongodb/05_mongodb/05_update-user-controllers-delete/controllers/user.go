@@ -97,12 +97,19 @@ func (uc UserController) DeleteUser(w http.ResponseWriter, r *http.Request, p ht
 }
 
 func (uc UserController) ResetUsers(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	count, errCount := uc.users.CountDocuments(context.Background(), primitive.D{})
+	if errCount != nil {
+		w.WriteHeader(http.StatusInternalServerError) // 500
+		return
+	}
+
 	if err := uc.users.Drop(context.Background()); err != nil {
 		w.WriteHeader(http.StatusInternalServerError) // 500
 		return
 	}
 
-	fmt.Println("dropped users collection")
+	result := fmt.Sprintf("Dropped collection containing %d users.\n", count)
+	fmt.Print(result)
 	w.WriteHeader(http.StatusOK) // 200
-	fmt.Fprint(w, "dropped users collection\n")
+	fmt.Fprint(w, result)
 }
