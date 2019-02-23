@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	fmt.Printf("[%v] Here we go...\n", time.Now())
+	fmt.Printf("[%v] Here we go...\n", time.Now().Format(time.RFC3339))
 
 	r := httprouter.New()
 	uc := controllers.NewUserController(getUserCollection())
@@ -26,6 +26,8 @@ func main() {
 }
 
 func getUserCollection() *mongo.Collection {
+	fmt.Printf("[%v] Connecting to MongoDB...\n", time.Now().Format(time.RFC3339))
+
 	// Connect to our local mongo
 	ctx, _ := context.WithTimeout(context.Background(), 3*time.Second)
 	client, errConnect := mongo.Connect(ctx, "mongodb://localhost:27017")
@@ -35,11 +37,13 @@ func getUserCollection() *mongo.Collection {
 		panic(errConnect)
 	}
 
+	fmt.Printf("[%v] Pinging MongoDB connection...\n", time.Now().Format(time.RFC3339))
+
 	if errPing := client.Ping(ctx, readpref.Primary()); errPing != nil {
 		panic(errPing)
 	}
 
-	fmt.Printf("[%v] Looks like we have successfully connected to MongoDB!\n", time.Now())
+	fmt.Printf("[%v] Looks like we have successfully connected to MongoDB!\n", time.Now().Format(time.RFC3339))
 
 	collection := client.Database("042_mongodb").Collection("05_users")
 
