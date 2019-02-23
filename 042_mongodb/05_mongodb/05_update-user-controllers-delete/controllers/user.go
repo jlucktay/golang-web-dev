@@ -61,12 +61,14 @@ func (uc UserController) CreateUser(w http.ResponseWriter, r *http.Request, _ ht
 		log.Fatal(errDecode)
 	}
 
-	// Create user
+	u.Id = primitive.NewObjectID()
+
+	// Create user in DB
 	insertUser := primitive.D{
+		{Key: "_id", Value: u.Id},
 		{Key: "age", Value: u.Age},
-		{Key: "_id", Value: primitive.NewObjectID()},
-		{Key: "name", Value: u.Name},
 		{Key: "gender", Value: u.Gender},
+		{Key: "name", Value: u.Name},
 	}
 	ior, errInsert := uc.users.InsertOne(context.Background(), insertUser)
 	if errInsert != nil {
