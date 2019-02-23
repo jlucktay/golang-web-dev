@@ -39,7 +39,7 @@ func (uc UserController) GetUser(w http.ResponseWriter, r *http.Request, p httpr
 	)
 	if errDecode := readUser.Decode(&u); errDecode != nil {
 		w.WriteHeader(http.StatusInternalServerError) // 500
-		fmt.Fprint(w, "error decoding user:", errDecode)
+		fmt.Fprintf(w, "error decoding user: %s\n", errDecode)
 		return
 	}
 
@@ -64,7 +64,9 @@ func (uc UserController) CreateUser(w http.ResponseWriter, r *http.Request, _ ht
 	}
 	ior, errInsert := uc.users.InsertOne(context.Background(), insertUser)
 	if errInsert != nil {
-		log.Fatal(errInsert)
+		w.WriteHeader(http.StatusInternalServerError) // 500
+		fmt.Fprintf(w, "error inserting user: %s\n", errInsert)
+		return
 	}
 
 	fmt.Printf("insert result: %+v\n", ior)
