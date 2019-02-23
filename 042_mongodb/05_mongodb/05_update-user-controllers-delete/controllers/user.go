@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/jlucktay/golang-web-dev/042_mongodb/05_mongodb/05_update-user-controllers-delete/models"
 	"github.com/julienschmidt/httprouter"
@@ -130,6 +131,7 @@ func (uc UserController) ResetUsers(w http.ResponseWriter, r *http.Request, _ ht
 
 	result := fmt.Sprintf("Dropped collection containing %d users.\n", count)
 	fmt.Print(result)
+	w.Header().Add(http.CanonicalHeaderKey("drop-count"), strconv.FormatInt(count, 10))
 	w.WriteHeader(http.StatusOK) // 200
 	fmt.Fprint(w, result)
 }
