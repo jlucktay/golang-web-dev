@@ -42,10 +42,16 @@ func (uc UserController) GetUser(w http.ResponseWriter, r *http.Request, p httpr
 		fmt.Fprintf(w, "error decoding user: %s\n", errDecode)
 		return
 	}
+	mu, errMarshal := json.MarshalIndent(u, "", "  ")
+	if errMarshal != nil {
+		w.WriteHeader(http.StatusInternalServerError) // 500
+		fmt.Fprintf(w, "error marshaling user: %s\n", errMarshal)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK) // 200
-	fmt.Fprintf(w, "%+v\n", u)
+	fmt.Fprintf(w, "%s\n", mu)
 }
 
 func (uc UserController) CreateUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
@@ -69,10 +75,18 @@ func (uc UserController) CreateUser(w http.ResponseWriter, r *http.Request, _ ht
 		return
 	}
 
+	// Return result
+	mu, errMarshal := json.MarshalIndent(u, "", "  ")
+	if errMarshal != nil {
+		w.WriteHeader(http.StatusInternalServerError) // 500
+		fmt.Fprintf(w, "error marshaling user: %s\n", errMarshal)
+		return
+	}
+
 	fmt.Printf("insert result: %+v\n", ior)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated) // 201
-	fmt.Fprintf(w, "%+v\n", insertUser)
+	fmt.Fprintf(w, "%s\n", mu)
 }
 
 func (uc UserController) DeleteUser(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
