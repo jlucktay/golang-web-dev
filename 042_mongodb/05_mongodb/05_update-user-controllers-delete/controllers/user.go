@@ -118,11 +118,13 @@ func (uc UserController) ResetUsers(w http.ResponseWriter, r *http.Request, _ ht
 	count, errCount := uc.users.CountDocuments(context.Background(), primitive.D{})
 	if errCount != nil {
 		w.WriteHeader(http.StatusInternalServerError) // 500
+		fmt.Fprintf(w, "Error counting users: %v\n", errCount)
 		return
 	}
 
-	if err := uc.users.Drop(context.Background()); err != nil {
+	if errDrop := uc.users.Drop(context.Background()); errDrop != nil {
 		w.WriteHeader(http.StatusInternalServerError) // 500
+		fmt.Fprintf(w, "Error dropping users: %v\n", errDrop)
 		return
 	}
 
