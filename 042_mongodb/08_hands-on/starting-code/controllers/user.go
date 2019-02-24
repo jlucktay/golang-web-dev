@@ -81,6 +81,7 @@ func (uc UserController) saveSession() {
 	if errOpen != nil {
 		log.Fatal(errOpen)
 	}
+	defer ps.Close()
 
 	enc := json.NewEncoder(ps)
 	if errEncode := enc.Encode(uc.session); errEncode != nil {

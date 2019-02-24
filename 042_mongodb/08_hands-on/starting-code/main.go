@@ -35,6 +35,7 @@ func getSession() (m map[string]models.User) {
 	if errOpen != nil {
 		log.Fatal(errOpen)
 	}
+	defer ps.Close()
 
 	if errDecode := json.NewDecoder(ps).Decode(&m); errDecode != nil {
 		log.Fatal(errDecode)
