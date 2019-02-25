@@ -26,7 +26,7 @@ func (c Controller) SignUp(w http.ResponseWriter, req *http.Request) {
 		l := req.FormValue("lastname")
 		r := req.FormValue("role")
 		// username taken?
-		if _, ok := session.DbUsers[un]; ok {
+		if _, ok := session.Users[un]; ok {
 			http.Error(w, "Username already taken", http.StatusForbidden)
 			return
 		}
@@ -36,10 +36,10 @@ func (c Controller) SignUp(w http.ResponseWriter, req *http.Request) {
 			Name:  "session",
 			Value: sID.String(),
 		}
-		ck.MaxAge = session.SessionLength
+		ck.MaxAge = session.Length
 		http.SetCookie(w, ck)
-		session.DbSessions[ck.Value] = models.Session{UN: un, LastActivity: time.Now()}
-		// store user in dbUsers
+		session.Sessions[ck.Value] = models.Session{UN: un, LastActivity: time.Now()}
+		// store user in Users
 		bs, err := bcrypt.GenerateFromPassword([]byte(p), bcrypt.MinCost)
 		if err != nil {
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
@@ -52,12 +52,12 @@ func (c Controller) SignUp(w http.ResponseWriter, req *http.Request) {
 			Last:     l,
 			Role:     r,
 		}
-		session.DbUsers[un] = u
+		session.Users[un] = u
 		// redirect
 		http.Redirect(w, req, "/", http.StatusSeeOther)
 		return
 	}
-	session.ShowSessions() // for demonstration purposes
+	session.Show() // for demonstration purposes
 	err := c.tpl.ExecuteTemplate(w, "signup.gohtml", u)
 	if err != nil {
 		log.Fatal(err)
@@ -76,7 +76,7 @@ func (c Controller) Login(w http.ResponseWriter, req *http.Request) {
 		un := req.FormValue("username")
 		p := req.FormValue("password")
 		// is there a username?
-		u, ok := session.DbUsers[un]
+		u, ok := session.Users[un]
 		if !ok {
 			http.Error(w, "Username and/or password do not match", http.StatusForbidden)
 			return
@@ -93,13 +93,13 @@ func (c Controller) Login(w http.ResponseWriter, req *http.Request) {
 			Name:  "session",
 			Value: sID.String(),
 		}
-		ck.MaxAge = session.SessionLength
+		ck.MaxAge = session.Length
 		http.SetCookie(w, ck)
-		session.DbSessions[ck.Value] = models.Session{UN: un, LastActivity: time.Now()}
+		session.Sessions[ck.Value] = models.Session{UN: un, LastActivity: time.Now()}
 		http.Redirect(w, req, "/", http.StatusSeeOther)
 		return
 	}
-	session.ShowSessions() // for demonstration purposes
+	session.Show() // for demonstration purposes
 	err := c.tpl.ExecuteTemplate(w, "login.gohtml", u)
 	if err != nil {
 		log.Fatal(err)
@@ -114,7 +114,7 @@ func (c Controller) Logout(w http.ResponseWriter, req *http.Request) {
 	}
 	ck, _ := req.Cookie("session")
 	// delete the session
-	delete(session.DbSessions, ck.Value)
+	delete(session.Sessions, ck.Value)
 	// remove the cookie
 	ck = &http.Cookie{
 		Name:   "session",
@@ -123,9 +123,9 @@ func (c Controller) Logout(w http.ResponseWriter, req *http.Request) {
 	}
 	http.SetCookie(w, ck)
 
-	// clean up dbSessions
-	if time.Since(session.DbSessionsCleaned) > (time.Second * 30) {
-		go session.CleanSessions()
+	// clean up Sessions
+	if time.Since(session.LastCleaned) > (time.Second * 30) {
+		go session.Clean()
 	}
 
 	http.Redirect(w, req, "/login", http.StatusSeeOther)

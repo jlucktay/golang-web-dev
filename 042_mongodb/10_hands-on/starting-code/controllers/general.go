@@ -18,7 +18,7 @@ func NewController(t *template.Template) *Controller {
 
 func (c Controller) Index(w http.ResponseWriter, req *http.Request) {
 	u := session.GetUser(w, req)
-	session.ShowSessions() // for demonstration purposes
+	session.Show() // for demonstration purposes
 	err := c.tpl.ExecuteTemplate(w, "index.gohtml", u)
 	if err != nil {
 		log.Fatal(err)
@@ -35,7 +35,7 @@ func (c Controller) Bar(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "You must be 007 to enter the bar", http.StatusForbidden)
 		return
 	}
-	session.ShowSessions() // for demonstration purposes
+	session.Show() // for demonstration purposes
 	err := c.tpl.ExecuteTemplate(w, "bar.gohtml", u)
 	if err != nil {
 		log.Fatal(err)

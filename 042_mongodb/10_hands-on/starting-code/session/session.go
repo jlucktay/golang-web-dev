@@ -9,17 +9,13 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-const SessionLength int = 30
+const Length int = 30
 
 var (
-	DbSessions        = map[string]models.Session{} // session ID, session
-	DbSessionsCleaned time.Time
-	DbUsers           = map[string]models.User{} // user ID, user
+	LastCleaned = time.Now()
+	Sessions    = map[string]models.Session{} // session ID, session
+	Users       = map[string]models.User{}    // user ID, user
 )
-
-func init() {
-	DbSessionsCleaned = time.Now()
-}
 
 func GetUser(w http.ResponseWriter, req *http.Request) models.User {
 	// get cookie
@@ -31,52 +27,53 @@ func GetUser(w http.ResponseWriter, req *http.Request) models.User {
 			Value: sID.String(),
 		}
 	}
-	ck.MaxAge = SessionLength
+	ck.MaxAge = Length
 	http.SetCookie(w, ck)
 
 	// if the user exists already, get user
 	var u models.User
-	if s, ok := DbSessions[ck.Value]; ok {
+	if s, ok := Sessions[ck.Value]; ok {
 		s.LastActivity = time.Now()
-		DbSessions[ck.Value] = s
-		u = DbUsers[s.UserName]
+		Sessions[ck.Value] = s
+		u = Users[s.UserName]
 	}
 	return u
 }
+
 func AlreadyLoggedIn(w http.ResponseWriter, req *http.Request) bool {
 	ck, err := req.Cookie("session")
 	if err != nil {
 		return false
 	}
-	s, ok := DbSessions[ck.Value]
+	s, ok := Sessions[ck.Value]
 	if ok {
 		s.LastActivity = time.Now()
-		DbSessions[ck.Value] = s
+		Sessions[ck.Value] = s
 	}
-	_, ok = DbUsers[s.UserName]
+	_, ok = Users[s.UserName]
 	// refresh session
-	ck.MaxAge = SessionLength
+	ck.MaxAge = Length
 	http.SetCookie(w, ck)
 	return ok
 }
 
-func CleanSessions() {
+func Clean() {
 	fmt.Println("BEFORE CLEAN") // for demonstration purposes
-	ShowSessions()              // for demonstration purposes
-	for k, v := range DbSessions {
+	Show()                      // for demonstration purposes
+	for k, v := range Sessions {
 		if time.Since(v.LastActivity) > (time.Second * 30) {
-			delete(DbSessions, k)
+			delete(Sessions, k)
 		}
 	}
-	DbSessionsCleaned = time.Now()
+	LastCleaned = time.Now()
 	fmt.Println("AFTER CLEAN") // for demonstration purposes
-	ShowSessions()             // for demonstration purposes
+	Show()                     // for demonstration purposes
 }
 
 // for demonstration purposes
-func ShowSessions() {
+func Show() {
 	fmt.Println("********")
-	for k, v := range DbSessions {
+	for k, v := range Sessions {
 		fmt.Println(k, v.UserName)
 	}
 	fmt.Println("")
