@@ -10,6 +10,7 @@ import (
 	"github.com/jlucktay/golang-web-dev/042_mongodb/05_mongodb/05_update-user-controllers-delete/controllers"
 	"github.com/julienschmidt/httprouter"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
@@ -30,7 +31,9 @@ func getUserCollection() *mongo.Collection {
 
 	// Connect to our local mongo
 	ctx, _ := context.WithTimeout(context.Background(), 3*time.Second)
-	client, errConnect := mongo.Connect(ctx, "mongodb://localhost:27017")
+	opts := options.Client()
+	opts = opts.SetHosts([]string{"mongodb://localhost:27017"})
+	client, errConnect := mongo.Connect(ctx, opts)
 
 	// Check if connection error, is mongo running?
 	if errConnect != nil {
